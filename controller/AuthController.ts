@@ -19,7 +19,7 @@ export const registerUSer = async (req:any,res:Response)=>{
 
         const value = crypto.randomBytes(16).toString("hex")
 
-        const token = jwt.sign(value, "justRand")
+        const token = jwt.sign(value, "secret")
 
         const user = await prisma.authModel.create({
             data:{
@@ -94,7 +94,7 @@ export const verifyUSer = async (req: Request, res: Response) => {
     try {
       const { token } = req.params;
   
-      const getID: any = jwt.verify(token, "justRand", (err, payload: any) => {
+      const getID: any = jwt.verify(token, "secret", (err, payload: any) => {
         if (err) {
           return err;
         } else {
@@ -205,14 +205,13 @@ export const verifyUSer = async (req: Request, res: Response) => {
       });
     }
   };
-
-
+  
   export const changeAccountPassword = async (req: Request, res: Response) => {
     try {
       const { token } = req.params;
       const { password } = req.body;
   
-      const getID: any = jwt.verify(token, "justRand", (err, payload: any) => {
+      const getID: any = jwt.verify(token, "secret", (err, payload: any) => {
         if (err) {
           return err;
         } else {
