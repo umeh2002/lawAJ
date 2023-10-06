@@ -37,3 +37,24 @@ export const commentOnInterpretation = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const viewInterpretationComment = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { lawID } = req.params;
+    const interpretation = await prisma.lawModel.findUnique({
+      where: { id: lawID },
+      include: { comments: true },
+    });
+    return res.status(HTTP.OK).json({
+      message: "All Interpretation Comments",
+      data: interpretation?.comments,
+    });
+  } catch (error) {
+    return res.status(HTTP.NOT_FOUND).json({
+      message: "Error viewing comments",
+    });
+  }
+};
