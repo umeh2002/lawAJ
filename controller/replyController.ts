@@ -46,3 +46,37 @@ export const replyComment = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const viewAllReplies = async (req: Request, res: Response) => {
+  try {
+    const { userID, commentID } = req.params;
+
+    const user = await prisma.authModel.findUnique({
+      where: { id: userID },
+    });
+
+    const comment = await prisma.commentModel.findUnique({
+      where: { id: commentID },
+    });
+
+    if (user && comment) {
+      const replies = await prisma.replyModel.findMany({
+        where: { commentID },
+      });
+
+      return res.status(HTTP.OK).json({
+        message: "All replies to comment gotten",
+        data: replies,
+      });
+    } else {
+      return res.status(HTTP.NOT_FOUND).json({
+        message: "user or comment not found",
+      });
+    }
+  } catch (error) {
+    return res.status(HTTP.BAD).json({
+      message: "error viewing all replies to comment",
+      data: error,
+    });
+  }
+};
