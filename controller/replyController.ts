@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
+import { HTTP } from "../errors/mainError";
 
 const prisma = new PrismaClient();
 
@@ -29,17 +30,17 @@ export const replyComment = async (req: Request, res: Response) => {
       //   comment.reply = [...comment.reply, replied];
       comment.reply.push(replied);
 
-      return res.status(201).json({
+      return res.status(HTTP.CREATE).json({
         message: "reply created",
         data: replied,
       });
     } else {
-      return res.status(404).json({
+      return res.status(HTTP.NOT_FOUND).json({
         message: "user or comment not found",
       });
     }
   } catch (error) {
-    return res.status(500).json({
+    return res.status(HTTP.BAD).json({
       message: "error creating reply",
       data: error,
     });
