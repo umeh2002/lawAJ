@@ -80,3 +80,35 @@ export const viewAllReplies = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteReply = async (req: Request, res: Response) => {
+  try {
+    const { userID, replyID } = req.params;
+
+    const user = await prisma.authModel.findUnique({
+      where: { id: userID },
+    });
+
+    const replied = await prisma.replyModel.findUnique({
+      where: { id: replyID },
+    });
+
+    if (user?.id === replied?.userID) {
+      await prisma.replyModel.delete({
+        where: { id: replyID },
+      });
+      return res.status(HTTP.OK).json({
+        message: "Your reply was deleted",
+      });
+    } else {
+      return res.status(HTTP.UNAUTHORIZED).json({
+        message: "You are not authorized to delete this reply",
+      });
+    }
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: `Error deleting reply:${error.message}`,
+      data: error,
+    });
+  }
+};
