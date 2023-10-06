@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model authModel {
+  id String @id @default(uuid())
+
+  name     String
+  email    String @unique
+  password String
+
+  verified Boolean @default(false)
+  token    String?
+
+  avatar   String?
+  avatarID String?
+
+  role   String
+  roleID String? @unique
+
+  createdAt DateTime @default(now())
+
+  law lawModel[]
+}
+
+model lawModel {
+  id String @id @default(uuid())
+
+  title       String
+  description String
+  category    String
+  content     String
+
+  image   String?
+  imageID String?
+
+  createdAt DateTime @default(now())
+
+  user   authModel @relation(fields: [userID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userID String
+
+  rating Int[]
+  rate   Int?
+
+  like String[]
+
+
+  comments commentModel[]
+}
+
+model commentModel {
+  id String @id @default(uuid())
+
+  comment String
+
+  createdAt DateTime @default(now())
+
+  law    lawModel @relation(fields: [lawID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  lawID  String
+  userID String
+
+  reply replyModel[]
+}
+
+model replyModel {
+  id String @id @default(uuid())
+
+  reply String
+
+  createdAt DateTime @default(now())
+
+  comment   commentModel @relation(fields: [commentID], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  commentID String
+  userID    String
+}
