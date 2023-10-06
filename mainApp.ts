@@ -4,6 +4,8 @@ import helmet from "helmet"
 import morgan from "morgan"
 import { errorHandler } from "./errors/errorHandler";
 import { HTTP, mainError } from "./errors/mainError";
+import auth from "./router/AuthRouter"
+import router from "./router/AuthRouter";
 
 export const mainApp =(app:Application)=>{
 app.use(express.json())
@@ -39,4 +41,7 @@ app.all("*", (req : Request, res : Response, next : NextFunction)=>{
 })
 
 app.use(errorHandler)
+
+
+app.use("/api", auth)
 }
