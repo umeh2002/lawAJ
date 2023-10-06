@@ -270,3 +270,66 @@ export const likeLaw = async (req: any, res: Response) => {
     });
   }
 };
+
+export const unlikeLaw = async (req: any, res: Response) => {
+  try {
+    const { id: userID } = req.user;
+    const { lawID } = req.params;
+
+    const law: any = await prisma.lawModel.findUnique({
+      where: { id: lawID },
+    });
+
+    if (!law) {
+      return res.status(HTTP.NOT_FOUND).json({
+        message: "law not found",
+      });
+    }
+
+    if (!law.like.includes(userID)) {
+      return res.status(HTTP.BAD).json({
+        message: "You have not liked this law",
+      });
+    }
+
+    const unlikedUsers: any = law?.like.filter((user: any) => user !== userID);
+
+    await prisma.lawModel.update({
+      where: { id: lawID },
+      data: {
+        like: unlikedUsers,
+      },
+    });
+
+    return res.status(HTTP.CREATE).json({
+      message: "You just unliked this law",
+      data: {
+        like: unlikedUsers,
+      },
+    });
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: `Error unliking law: ${error.message}`,
+      data: error,
+    });
+  }
+};
+
+export const findLawByCategory = async (req: Request, res: Response) => {
+  try {
+    const { category } = req.body;
+    const law = await prisma.lawModel.findMany({
+      where: { category },
+    });
+
+    return res.status(HTTP.OK).json({
+      message: "getting all law categories",
+      data: law,
+    });
+  } catch (error: any) {
+    res.status(HTTP.NOT_FOUND).json({
+      message: `Couldn't get all categories${error.message}`,
+      data: error,
+    });
+  }
+};
