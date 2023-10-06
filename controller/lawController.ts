@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { streamUpload } from "../utils/streamUpload";
 import { HTTP } from "../errors/mainError";
 
-
 const prisma = new PrismaClient();
 
 export const createLaw = async (req: any, res: Response) => {
@@ -16,7 +15,7 @@ export const createLaw = async (req: any, res: Response) => {
       where: { id: userID },
       include: { law: true },
     });
-    if (user?.role==="lawyer") {
+    if (user?.role === "lawyer") {
       const law = await prisma.lawModel.create({
         data: {
           title,
@@ -51,7 +50,7 @@ export const createLaw = async (req: any, res: Response) => {
 export const viewAll = async (req: Request, res: Response) => {
   try {
     const law = await prisma.lawModel.findMany({
-        include:{comments:true}
+      include: { comments: true },
     });
     return res.status(HTTP.OK).json({
       message: "Success",
@@ -70,7 +69,7 @@ export const viewOne = async (req: Request, res: Response) => {
     const { lawID } = req.params;
     const law = await prisma.lawModel.findUnique({
       where: { id: lawID },
-      include:{comments:true}
+      include: { comments: true },
     });
     return res.status(HTTP.OK).json({
       message: "success",
@@ -227,6 +226,47 @@ export const rateLaw = async (req: Request, res: Response) => {
     return res.status(HTTP.NOT_FOUND).json({
       message: "error",
       data: error.message,
+    });
+  }
+};
+
+export const likeLaw = async (req: any, res: Response) => {
+  try {
+    const { id: userID } = req.user;
+    const { lawID } = req.params;
+
+    const law: any = await prisma.lawModel.findUnique({
+      where: { id: lawID },
+    });
+
+    if (!law) {
+      return res.status(HTTP.NOT_FOUND).json({
+        message: "law not found",
+      });
+    }
+
+    if (law?.like.includes(userID)) {
+      return res.status(HTTP.BAD).json({
+        message: "You have already liked this law",
+      });
+    } else {
+      law.like.push(userID);
+      await prisma.lawModel.update({
+        where: { id: lawID },
+        data: {
+          like: law?.like,
+        },
+      });
+
+      return res.status(HTTP.CREATE).json({
+        message: "You just liked this law",
+        data: law,
+      });
+    }
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: `Error loving law: ${error.message}`,
+      data: error,
     });
   }
 };
