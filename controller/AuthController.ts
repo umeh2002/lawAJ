@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import crypto from "crypto"
 import bcrypt from "bcrypt";
 import { role } from "../utils/role";
+import {HTTP} from "../errors/mainError"
 
 
 const prisma = new PrismaClient();
@@ -30,16 +31,13 @@ export const registerUSer = async (req:any,res:Response)=>{
             }
         })
 
-        // const tokenID = jwt.sign({
-        //     id:user.id},"justRand");sendAccountOpeningMail(user,tokenID)
-        
-            return res.status(201).json({
+            return res.status(HTTP.CREATE).json({
                 message: "User created",
                 data: user,
               });
 
     } catch (error) {
-        return res.status(404).json({
+        return res.status(HTTP.BAD).json({
             message:"Error Registing into our platform"
         })
     }
@@ -66,27 +64,27 @@ export const SignInUser = async (req: Request, res: Response) => {
             { expiresIn: "3d" }
           );
 
-          return res.status(201).json({
+          return res.status(HTTP.CREATE).json({
             message: `Welcome back ${user.email}`,
             user: token,
           });
         } else {
-          return res.status(404).json({
+          return res.status(HTTP.BAD).json({
             message: "Please go and verify your account",
           });
         }
       } else {
-        return res.status(404).json({
+        return res.status(HTTP.BAD).json({
           message: "check your password",
         });
       }
     } else {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "cannot find user",
       });
     }
   } catch (error) {
-    return res.status(404).json({
+    return res.status(HTTP.BAD).json({
       message: "Error signing in",
     });
   }
@@ -111,12 +109,12 @@ export const verifyUSer = async (req: Request, res: Response) => {
           token: "",
         },
       });
-      return res.status(201).json({
+      return res.status(HTTP.CREATE).json({
         message: "Account verified",
         data: user,
       });
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error verifying Account",
       });
     }
@@ -126,12 +124,12 @@ export const verifyUSer = async (req: Request, res: Response) => {
     try {
       const user = await prisma.authModel.findMany({});
   
-      return res.status(200).json({
+      return res.status(HTTP.OK).json({
         message: "Users found",
         data: user,
       });
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error viewing Users",
       });
     }
@@ -144,12 +142,12 @@ export const verifyUSer = async (req: Request, res: Response) => {
         where: { id: userID },
       });
   
-      return res.status(200).json({
+      return res.status(HTTP.OK).json({
         message: "User found",
         data: user,
       });
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error viewing single User",
       });
     }
@@ -165,12 +163,12 @@ export const verifyUSer = async (req: Request, res: Response) => {
         data: { name },
       });
   
-      return res.status(201).json({
+      return res.status(HTTP.CREATE).json({
         message: "user updated",
         data: user,
       });
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error updating user",
       });
     }
@@ -179,20 +177,12 @@ export const verifyUSer = async (req: Request, res: Response) => {
   export const updateUserAvatar = async (req: any, res: Response) => {
     try {
       const { userID } = req.params;
-  
-    //   const { secure_url, public_id }: any = await streamUpload(req);
-  
-    //   const user = await prisma.authModel.update({
-    //     where: { id: userID },
-    //     data: { avatar: secure_url, avatarID: public_id },
-    //   });
-  
-      return res.status(201).json({
+
+      return res.status(HTTP.CREATE).json({
         message: "User image updated",
-        // data: user,
       });
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error updating User Image",
       });
     }
@@ -206,11 +196,11 @@ export const verifyUSer = async (req: Request, res: Response) => {
         where: { id: userID },
       });
   
-      return res.status(201).json({
+      return res.status(HTTP.CREATE).json({
         message: "User deleted",
       });
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error deleting User",
       });
     }
@@ -245,17 +235,17 @@ export const verifyUSer = async (req: Request, res: Response) => {
           },
         });
   
-        return res.status(201).json({
+        return res.status(HTTP.CREATE).json({
           message: "Your password has been changed",
           data:changed
         });
       } else {
-        return res.status(404).json({
+        return res.status(HTTP.BAD).json({
           message: "can't reset this password",
         });
       }
     } catch (error) {
-      return res.status(404).json({
+      return res.status(HTTP.BAD).json({
         message: "Error verifying Account",
       });
     }
