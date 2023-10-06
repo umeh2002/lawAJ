@@ -58,3 +58,36 @@ export const viewInterpretationComment = async (
     });
   }
 };
+
+export const deleteTnterpretationComment = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { userID, commentID } = req.params;
+
+    const user = await prisma.authModel.findUnique({
+      where: { id: userID },
+    });
+
+    const commented = await prisma.commentModel.findUnique({
+      where: { id: commentID },
+    });
+
+    if (user?.id === commented?.userID) {
+      await prisma.commentModel.delete({
+        where: { id: commentID },
+      });
+      return res.status(HTTP.OK).json("comment deleted");
+    } else {
+      return res.status(HTTP.UNAUTHORIZED).json({
+        message: "you are not authorized to delete this comment",
+      });
+    }
+  } catch (error: any) {
+    return res.status(HTTP.BAD).json({
+      message: `error deleting comment:${error.message}`,
+      data: error,
+    });
+  }
+};

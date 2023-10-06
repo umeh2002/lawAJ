@@ -3,6 +3,7 @@ export enum HTTP {
   CREATE = 201,
   NOT_FOUND = 404,
   BAD = 400,
+  UNAUTHORIZED = 401,
 }
 
 interface iError {
