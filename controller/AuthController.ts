@@ -238,7 +238,7 @@ export const verifyUSer = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         const hashed = await bcrypt.hash(password, salt);
   
-        await prisma.authModel.update({
+      const changed =  await prisma.authModel.update({
           where: { id: user.id },
           data: {
             password: hashed,
@@ -247,6 +247,7 @@ export const verifyUSer = async (req: Request, res: Response) => {
   
         return res.status(201).json({
           message: "Your password has been changed",
+          data:changed
         });
       } else {
         return res.status(404).json({
