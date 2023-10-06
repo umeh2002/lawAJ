@@ -11,7 +11,7 @@ const port:number =parseInt(process.env.PORT!)
 mainApp(app)
 const server =app.listen(port,()=>{
     console.log("")
-    console.log("serveris listening on port", port)
+    console.log("server is listening on port", port)
 })
 
 process.on("unhandledRejection",(reason:any)=>{
