@@ -7,22 +7,13 @@ import { SignInUser, changeAccountPassword, deleteUser, registerUSer, updateUser
 
 const myUpload = multer().single("avatar");
 
+router.route("/create-account").post(validatorHolder(createUserValidator), registerUSer);
+router.route("/:token/verify-account").post(verifyUSer);
+router.route("/sign-in-account").post(SignInUser);
 router.route("/all-accounts").get(viewUsers);
 router.route("/:userID/single-account").get(viewOneUser);
 router.route("/:userID/delete").delete(deleteUser);
-
-router
-  .route("/create-account")
-  .post(validatorHolder(createUserValidator), registerUSer);
-
-router.route("/sign-in-account").post(SignInUser);
-
-router.route("/:token/verify-account").post(verifyUSer);
-
-router
-  .route("/:userID/update-account-avatar")
-  .patch(myUpload, updateUserAvatar);
-
+router .route("/:userID/update-account-avatar").patch(myUpload, updateUserAvatar);
 router.route("/:token/change-account-password").patch(changeAccountPassword);
 
 export default router;
